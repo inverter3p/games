@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Collection</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -18,6 +18,16 @@
         .game-link:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        /* Custom style for the number 15 icon */
+        .number-15-icon {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 800; /* Extra bold */
+            font-size: 2.25rem; /* text-4xl */
+            line-height: 1;
+            color: #FBBF24; /* amber-400 */
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+            transform: skew(-5deg);
         }
     </style>
 </head>
@@ -46,7 +56,16 @@
                 <span class="flex items-center justify-center gap-3">
                     <!-- Material Icon for Emoji Guess -->
                     <span class="material-icons text-4xl">emoji_emotions</span>
-                    Emoji Guess
+                    Emoji Acting
+                </span>
+            </a>
+            
+            <!-- 15 Questions Link -->
+            <a href="15question.html" class="game-link block bg-indigo-400 text-white font-bold py-6 px-6 rounded-xl text-2xl shadow-md">
+                <span class="flex items-center justify-center gap-3">
+                    <!-- Custom Number Icon -->
+                    <span class="number-15-icon">15</span>
+                    คำถาม วัดใจวีเจ
                 </span>
             </a>
 
@@ -60,4 +79,3 @@
 
 </body>
 </html>
-
