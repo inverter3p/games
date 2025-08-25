@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Reaction Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            touch-action: manipulation;
+        }
+        .emoji-display {
+            font-size: 8rem;
+            line-height: 1;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        .emoji-display.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 text-center">
+        
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-pink-500 mb-2">เกมทายใจอีโมจิ</h1>
+        <p class="text-gray-500 mb-6">วีเจทำท่าทาง ใครทายถูกได้คะแนน!</p>
+
+        <!-- Emoji Display Area -->
+        <div id="game-area" class="hidden">
+            <div id="emoji-container" class="bg-pink-100 w-full h-64 rounded-xl flex flex-col items-center justify-center mb-6 overflow-hidden p-4">
+                <div id="emoji-display" class="emoji-display">🤔</div>
+            </div>
+             <!-- Round Counter -->
+            <div id="round-counter" class="text-xl font-semibold text-gray-600 mb-4 h-8"></div>
+        </div>
+
+        <!-- Setup Section -->
+        <div id="setup-area" class="space-y-4">
+            <div>
+                <label for="rounds-select" class="block text-lg font-semibold text-gray-700 mb-2">เลือกจำนวนรอบ:</label>
+                <input type="number" id="rounds-select" value="10" min="5" max="10" step="1" class="w-full p-3 border border-gray-300 rounded-lg text-lg text-center focus:ring-2 focus:ring-pink-400">
+            </div>
+            <button id="start-button" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-6 rounded-lg text-xl shadow-md transition-transform transform hover:scale-105">
+                เริ่มเกม
+            </button>
+        </div>
+
+        <!-- Input Section -->
+        <div id="game-controls" class="mt-6 hidden">
+            <div class="mb-4">
+                <input type="text" id="name-input" placeholder="ใส่ชื่อคนที่ทายถูก..." class="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent transition">
+            </div>
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button id="skip-button" class="w-1/3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                    เปลี่ยน
+                </button>
+                <button id="correct-button" class="w-2/3 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                    ถูกต้อง
+                </button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Display -->
+        <div id="leaderboard" class="hidden mt-6 text-left">
+            <h2 class="text-2xl font-bold text-center text-pink-600 mb-4">🏆 ผู้ชนะ 🏆</h2>
+            <div id="leaderboard-list">
+                <!-- Winners will be populated here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Element References ---
+        const emojiDisplay = document.getElementById('emoji-display');
+        const startButton = document.getElementById('start-button');
+        const gameControls = document.getElementById('game-controls');
+        const nameInput = document.getElementById('name-input');
+        const correctButton = document.getElementById('correct-button');
+        const skipButton = document.getElementById('skip-button');
+        const roundCounter = document.getElementById('round-counter');
+        const leaderboard = document.getElementById('leaderboard');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const gameArea = document.getElementById('game-area');
+        const setupArea = document.getElementById('setup-area');
+        const roundsSelect = document.getElementById('rounds-select');
+
+        // --- Game Data ---
+        const emojis = ['😂', '😡', '😍', '😎', '😭', '😱', '🤔', '🥳', '🤯', '😴', '🥺', '🤩', '🙏', '💪', '🤡', '👻'];
+        let scores = {};
+        let currentRound = 0;
+        let totalRounds = 10;
+        let roundEmojis = [];
+
+        // --- Game Functions ---
+        
+        /**
+         * Sets up and starts a new game.
+         */
+        function startGame() {
+            // Play start sound
+            
+
+            setupArea.classList.add('hidden');
+            gameControls.classList.remove('hidden');
+            leaderboard.classList.add('hidden');
+            gameArea.classList.remove('hidden');
+            
+            scores = {};
+            currentRound = 0;
+            roundEmojis = [];
+            totalRounds = parseInt(roundsSelect.value, 10);
+
+            const shuffledEmojis = [...emojis].sort(() => 0.5 - Math.random());
+            roundEmojis = shuffledEmojis.slice(0, totalRounds);
+
+            nextRound();
+        }
+
+        /**
+         * Proceeds to the next round or ends the game.
+         */
+        function nextRound() {
+            try {
+                const startSound = new Audio('sound/correct.wav');
+                startSound.play();
+            } catch (e) {
+                console.error("Could not play start sound:", e);
+            }
+            currentRound++;
+            if (currentRound > totalRounds) {
+                endGame();
+                return;
+            }
+            
+            roundCounter.textContent = `รอบที่ ${currentRound} / ${totalRounds}`;
+            displayEmoji(roundEmojis[currentRound - 1]);
+            
+            nameInput.value = '';
+            nameInput.focus();
+        }
+
+        /**
+         * Ends the game and displays the leaderboard.
+         */
+        function endGame() {
+            // Play bonus sound when the game ends
+            try {
+                const endSound = new Audio('sound/bonus.wav');
+                endSound.play();
+            } catch (e) {
+                console.error("Could not play bonus sound:", e);
+            }
+
+            gameControls.classList.add('hidden');
+            gameArea.classList.add('hidden');
+            leaderboard.classList.remove('hidden');
+            setupArea.classList.remove('hidden');
+
+            const sortedScores = Object.entries(scores).sort(([,a],[,b]) => b-a);
+            
+            leaderboardList.innerHTML = '';
+
+            if (sortedScores.length === 0) {
+                leaderboardList.innerHTML = '<p class="text-center text-gray-600">ไม่มีใครทายถูกเลย!</p>';
+                return;
+            }
+
+            const top3 = sortedScores.slice(0, 3);
+            const colors = ['bg-yellow-200 text-yellow-800', 'bg-gray-200 text-gray-800', 'bg-orange-200 text-orange-800'];
+            const medals = ['🥇', '🥈', '🥉'];
+
+            top3.forEach(([name, score], index) => {
+                const item = document.createElement('div');
+                item.className = `winner-item ${colors[index]}`;
+                item.innerHTML = `
+                    <span>${medals[index]} ${name}</span>
+                    <span class="font-bold">${score} คะแนน</span>
+                `;
+                leaderboardList.appendChild(item);
+            });
+        }
+
+        /**
+         * Records the winner for the current round.
+         */
+        function submitWinner() {
+            const winnerName = nameInput.value.trim();
+            if (winnerName === "") {
+                nameInput.classList.add('border-red-500', 'border-2');
+                setTimeout(() => nameInput.classList.remove('border-red-500', 'border-2'), 500);
+                return;
+            }
+
+            scores[winnerName] = (scores[winnerName] || 0) + 1;
+            
+            nextRound();
+        }
+        
+        /**
+         * Skips the current emoji and displays a new one.
+         */
+        function skipEmoji() {
+            let newEmoji;
+            do {
+                const randomIndex = Math.floor(Math.random() * emojis.length);
+                newEmoji = emojis[randomIndex];
+            } while (roundEmojis.includes(newEmoji));
+
+            roundEmojis[currentRound - 1] = newEmoji;
+            
+            displayEmoji(newEmoji);
+            nameInput.focus();
+        }
+
+        /**
+         * Handles the visual display and animation of the emoji.
+         */
+        function displayEmoji(emoji) {
+            emojiDisplay.classList.remove('active');
+            
+            setTimeout(() => {
+                emojiDisplay.textContent = emoji;
+                emojiDisplay.classList.add('active');
+            }, 300);
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startGame);
+        correctButton.addEventListener('click', submitWinner);
+        skipButton.addEventListener('click', skipEmoji);
+        nameInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                submitWinner();
+            }
+        });
+    </script>
+
+</body>
+</html>
