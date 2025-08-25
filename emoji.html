@@ -53,6 +53,18 @@
 
         <!-- Setup Section -->
         <div id="setup-area" class="space-y-4">
+            
+            <!-- How to Play Section -->
+            <div id="how-to-play" class="bg-pink-100 p-4 rounded-lg text-left">
+                <h2 class="text-xl font-bold text-pink-600 mb-2 text-center">📜 กติกาการเล่น 📜</h2>
+                <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                    <li>วีเจแสดงท่าทาง <span class="font-semibold">อีโมจิ</span> ตามหน้าจอ</li>
+                    <li>ผู้ชมพิมพ์ <span class="font-semibold">อีโมจิ</span> ที่คิดว่าเป็นคำตอบ</li>
+                    <li><span class="font-semibold">คนที่ตอบถูกคนแรก</span> จะได้สะสมคะแนน</li>
+                    <li>จบเกม! คนที่มีคะแนนสูงสุดจะเป็น <span class="font-semibold">ผู้ชนะ</span> วีเจให้รางวัลเป็นอะไรก็ได้</li>
+                </ol>
+            </div>
+
             <div>
                 <label for="rounds-select" class="block text-lg font-semibold text-gray-700 mb-2">เลือกจำนวนรอบ:</label>
                 <input type="number" id="rounds-select" value="10" min="5" max="10" step="1" class="w-full p-3 border border-gray-300 rounded-lg text-lg text-center focus:ring-2 focus:ring-pink-400">
@@ -65,7 +77,7 @@
         <!-- Input Section -->
         <div id="game-controls" class="mt-6 hidden">
             <div class="mb-4">
-                <input type="text" id="name-input" placeholder="ใส่ชื่อคนที่ทายถูกคนแรก..." class="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent transition">
+                <input type="text" id="name-input" placeholder="ใส่ชื่อคนที่ทายถูก..." class="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent transition">
             </div>
             <!-- Action Buttons -->
             <div class="flex gap-4">
@@ -127,6 +139,7 @@
   '🏓','🏸','🎯','🏹','🎮'
   
 ];
+
         let scores = {};
         let currentRound = 0;
         let totalRounds = 10;
@@ -278,6 +291,3 @@
 
 </body>
 </html>
-
-
-
